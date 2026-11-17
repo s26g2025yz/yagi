@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#172554">
-<title>情報科学概論｜赤文字一問一答</title>
+<title>情報科学概論｜3択クイズ</title>
 <style>
 :root{color-scheme:light;--navy:#172554;--blue:#2563eb;--bg:#f3f6fb;--line:#dbe3ef;--muted:#64748b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:#172033}
@@ -16,7 +16,7 @@ main{padding:18px 14px 40px}.stats{display:grid;grid-template-columns:repeat(3,1
 .card{background:white;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 8px 24px #0f172a0b}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}.tag{font-size:12px;font-weight:700;color:#1d4ed8;background:#eff6ff;padding:6px 10px;border-radius:20px}
 .counter{font-size:12px;color:var(--muted)}.qtitle{font-size:12px;color:var(--muted);margin:24px 0 8px}.question{font-size:21px;line-height:1.65;font-weight:750;margin:0 0 20px;min-height:95px}
-input{width:100%;font:inherit;font-size:17px;padding:14px;border:1.5px solid #cbd5e1;border-radius:12px;outline:none}input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb20}
+.choices{display:grid;gap:10px}.choice{width:100%;text-align:left;background:#fff;border:1.5px solid #cbd5e1;color:#172033;padding:15px;border-radius:12px;font-size:16px}.choice:disabled{cursor:default;opacity:1}.choice.correct{border-color:#16a34a;background:#ecfdf5;color:#166534}.choice.wrong{border-color:#ea580c;background:#fff7ed;color:#9a3412}.choice .letter{display:inline-grid;place-items:center;width:26px;height:26px;margin-right:9px;border-radius:50%;background:#eef2f7;font-size:13px}
 button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:13px 16px;cursor:pointer}.primary{background:var(--blue);color:white;width:100%;margin-top:10px}.secondary{background:#eef2f7;color:#334155}.actions{display:flex;gap:9px;margin-top:13px}.actions button{flex:1}
 .feedback{margin-top:14px;padding:13px;border-radius:12px;font-size:14px;line-height:1.65;display:none}.good{display:block;background:#ecfdf5;color:#166534;border:1px solid #bbf7d0}.bad{display:block;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
 .answer{font-weight:800}.hint{font-size:12px;color:var(--muted);line-height:1.6;margin:14px 2px}
@@ -26,7 +26,7 @@ details{margin-top:17px;background:white;border:1px solid var(--line);border-rad
 </style>
 </head>
 <body>
-<header><div class="wrap"><div class="kicker">STUDY MODE / INFORMATION SCIENCE</div><h1>情報科学概論｜赤文字一問一答</h1><p>第6回・第7回・第8回の講義PDFから、赤文字の用語・重要語句を出題</p></div></header>
+<header><div class="wrap"><div class="kicker">STUDY MODE / INFORMATION SCIENCE</div><h1>情報科学概論｜3択クイズ</h1><p>第6回・第7回・第8回の講義PDFから、赤文字の用語・重要語句を出題</p></div></header>
 <main>
  <div class="stats">
   <div class="stat"><strong id="mastered">0</strong><span>マスター済み</span></div>
@@ -36,13 +36,13 @@ details{margin-top:17px;background:white;border:1px solid var(--line);border-rad
  <div class="progress"><div id="bar"></div></div>
  <section class="card" id="quiz">
   <div class="row"><span class="tag" id="unit">第6回</span><span class="counter" id="count">正解 0 / 3回</span></div>
-  <p class="qtitle">次の説明に当てはまる赤文字の用語は？</p>
+  <p class="qtitle">次の説明に当てはまる用語を3つの選択肢から選ぼう</p>
   <p class="question" id="prompt"></p>
-  <form id="form"><input id="answer" autocomplete="off" placeholder="用語を入力してください" aria-label="回答"><button class="primary" type="submit">回答する</button></form>
+  <div id="choices" class="choices" role="group" aria-label="回答の選択肢"></div>
   <div id="feedback" class="feedback" aria-live="polite"></div>
   <div class="actions"><button class="secondary" id="skip" type="button">次の問題へ</button><button class="secondary" id="reset" type="button">進捗をリセット</button></div>
  </section>
- <p class="hint">各問題で3回正解するとマスターになり、以降は出題されません。不正解でも正解数は減りません。進捗はこのブラウザに保存されます。</p>
+ <p class="hint">各問題で3回正解するとマスターになり、以降は出題されません。進捗はこのブラウザに保存されます。</p>
  <details><summary>問題ごとの進捗を確認</summary><div class="list" id="list"></div></details>
 </main>
 <script>
@@ -69,7 +69,7 @@ function renderStats(){
 function next(){
  const pool=active(); locked=false;
  const fb=document.getElementById("feedback");fb.className="feedback";fb.style.display="none";fb.textContent="";
- document.getElementById("answer").value="";
+ document.getElementById("choices").innerHTML="";
  if(!pool.length){
   document.getElementById("quiz").innerHTML='<div class="complete"><h2>全問マスター達成！</h2><p>赤文字の全問題で3回正解しました。おめでとう！</p><button class="secondary" onclick="location.reload()">ページを再表示</button></div>';
   renderStats();return;
@@ -78,14 +78,30 @@ function next(){
  document.getElementById("unit").textContent=current.unit;
  document.getElementById("count").textContent=`正解 ${count(current)} / 3回`;
  document.getElementById("prompt").textContent=current.prompt;
- document.getElementById("answer").focus({preventScroll:true});
+ renderChoices();
  renderStats();
 }
-document.getElementById("form").addEventListener("submit",e=>{
- e.preventDefault();if(locked||!current)return;
- const val=document.getElementById("answer").value.trim();if(!val)return;
- const fb=document.getElementById("feedback");locked=true;
- if(norm(val)===norm(current.answer)){
+function renderChoices(){
+ const distractors=questions.filter(q=>q.answer!==current.answer).map(q=>q.answer);
+ const shuffled=distractors.sort(()=>Math.random()-.5).slice(0,2);
+ const options=[current.answer,...shuffled].sort(()=>Math.random()-.5);
+ document.getElementById("choices").innerHTML=options.map((answer,i)=>
+  `<button type="button" class="choice" data-answer="${i}" onclick="chooseAnswer(${i})"><span class="letter">${["A","B","C"][i]}</span>${answer}</button>`
+ ).join("");
+ window.currentOptions=options;
+}
+function chooseAnswer(index){
+ if(locked||!current)return;
+ locked=true;
+ const selected=window.currentOptions[index];
+ const correct=selected===current.answer;
+ const fb=document.getElementById("feedback");
+ document.querySelectorAll(".choice").forEach((button,i)=>{
+  button.disabled=true;
+  if(window.currentOptions[i]===current.answer)button.classList.add("correct");
+  else if(i===index&&!correct)button.classList.add("wrong");
+ });
+ if(correct){
   state.counts[current.answer]=count(current)+1;save();
   fb.className="feedback good";
   fb.innerHTML=`<strong>正解！</strong><br><span class="answer">${current.answer}</span>：${current.prompt}<br>正解数 ${count(current)} / 3回${count(current)>=3?' — マスター！':''}`;
@@ -93,9 +109,10 @@ document.getElementById("form").addEventListener("submit",e=>{
   fb.className="feedback bad";
   fb.innerHTML=`<strong>不正解</strong><br>正解は <span class="answer">${current.answer}</span> です。<br>${current.prompt}<br>正解数は ${count(current)} / 3回のままです。`;
  }
- fb.style.display="block";document.getElementById("count").textContent=`正解 ${count(current)} / 3回`;
+ fb.style.display="block";
+ document.getElementById("count").textContent=`正解 ${count(current)} / 3回`;
  renderStats();
-});
+}
 document.getElementById("skip").addEventListener("click",()=>{next();document.getElementById("form").querySelector("button").textContent="回答する";});
 document.getElementById("reset").addEventListener("click",()=>{if(confirm("正解数と進捗をすべてリセットしますか？")){state={counts:{},cursor:0};save();location.reload();}});
 renderStats();next();
