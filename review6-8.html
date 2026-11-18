@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f8ee">
+<title>認知科学概論｜一問一答 6〜8</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#243128;background:#f5f8ee}
+*{box-sizing:border-box}body{margin:0;padding:20px 14px 40px}.wrap{max-width:720px;margin:auto}
+header,.panel{background:white;border:1px solid #dce8d0;border-radius:16px;padding:18px;margin-bottom:14px}
+h1{font-size:20px;margin:0 0 6px} .sub{color:#647266;font-size:13px}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:13px}
+.stat{background:#f1f6eb;padding:8px 12px;border-radius:10px}
+.bar{height:8px;background:#e7eddf;border-radius:10px;margin-top:12px;overflow:hidden}.fill{height:100%;width:0;background:#83b94c;transition:width .2s}
+.tag{font-size:12px;color:#55743b;font-weight:700;margin-bottom:12px}
+.question{font-size:19px;line-height:1.65;font-weight:700;margin:0 0 18px;white-space:pre-wrap}
+.choices{display:grid;gap:10px}
+.choice{border:1px solid #cfd9c8;background:#fff;border-radius:12px;padding:14px;text-align:left;font-size:16px;line-height:1.5;color:#243128;cursor:pointer}
+.choice:disabled{cursor:default;opacity:1}.choice.correct{background:#edf7e7;border-color:#77ad4e;color:#315c20}.choice.wrong{background:#fff0ed;border-color:#d98a7d;color:#8c3024}
+.feedback{margin-top:14px;padding:12px;border-radius:10px;background:#f4f6f2;line-height:1.6;display:none}.feedback.show{display:block}
+.actions{display:flex;gap:10px;margin-top:16px}.actions button,.smallbtn{border:0;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:700;cursor:pointer}
+.primary{background:#79a943;color:white;flex:1}.secondary{background:#edf1e9;color:#39483a}
+.note{font-size:12px;color:#6d786d;line-height:1.6;margin-top:12px}
+@media(prefers-color-scheme:dark){:root{background:#171d17;color:#e8eee6}.panel,header{background:#222b22;border-color:#3b4938}.sub,.note{color:#b2c0ae}.stat{background:#303b2e}.bar{background:#394337}.choice{background:#293329;color:#e8eee6;border-color:#4a5948}.choice.correct{background:#29432a;color:#c9efb9}.choice.wrong{background:#492c29;color:#ffd0c7}.feedback{background:#303a30}.secondary{background:#3b463a;color:#e8eee6}}
+</style>
+</head>
+<body><main class="wrap">
+<header><h1>認知科学概論｜一問一答</h1><div class="sub">レビューシート 6-1〜8-2｜全30問・3択</div>
+<div class="stats"><span class="stat">問題 <b id="count">1 / 30</b></span><span class="stat">正解 <b id="score">0</b></span><span class="stat">正答率 <b id="rate">0%</b></span></div><div class="bar"><div class="fill" id="progress"></div></div></header>
+<section class="panel"><div class="tag" id="tag"></div><p class="question" id="question"></p><div class="choices" id="choices"></div><div class="feedback" id="feedback"></div><div class="actions"><button class="secondary" id="skip">スキップ</button><button class="primary" id="next" disabled>次の問題へ</button></div><div class="note">正解すると正答数に加算されます。選択肢は資料の正答と、関連する用語・概念から構成しています。</div></section>
+<div class="actions"><button class="secondary" id="restart">最初からやり直す</button></div>
+</main>
+<script>
+const questions = [
+{unit:"6-1｜プログラミング言語",q:"C言語は、どちらの分類に当てはまるか。",a:"汎用型",c:["領域特化型","汎用型","手続き型"]},
+{unit:"6-1｜プログラミング言語",q:"TeXは、どちらの分類に当てはまるか。",a:"領域特化型",c:["汎用型","領域特化型","オブジェクト指向型"]},
+{unit:"6-1｜プログラミング言語",q:"Pythonは、資料ではどの型として分類されているか。",a:"手続き型",c:["関数型","手続き型","領域特化型"]},
+{unit:"6-1｜正規表現",q:"正規表現「/し..い/」を用いたとき、生成されるはずのない単語はどれか。",a:"しょうもない",c:["しんせい","しっぱい","しょうもない"]},
+{unit:"6-1｜正規表現",q:"正規表現「/い+ええ/」で表されるものとして、資料の正答はどれか。",a:"え",c:["いいえ","いいいいいいえ","え"]},
+{unit:"6-1｜正規表現",q:"正規表現「/(女王|王様|貴族)と(庶民|貴民|市民)と…/」に対応する組み合わせはどれか。",a:"貴族と庶民と王様",c:["王様と市民と王様","女王と貴民と女王","貴族と庶民と王様"]},
+{unit:"6-2｜フールプルーフ",q:"フールプルーフとは、人間がどのようにする仕組みか。",a:"失敗できないようにする",c:["失敗できないようにする","運用を継続する","安全に停止する"]},
+{unit:"6-2｜フェールソフト",q:"フォールトトレラントは、失敗が起きたときにどのようにする仕組みか。",a:"運用を継続する",c:["安全に停止する","運用を継続する","失敗を完全に防止する"]},
+{unit:"6-2｜フェールセーフ",q:"フェールセーフは、失敗が起きたときにどのようにする仕組みか。",a:"安全に停止する",c:["運用を継続する","失敗できないようにする","安全に停止する"]},
+{unit:"6-2｜インターフェース",q:"ボタンの位置や形状が、OSが異なっても共通している性質はどれか。",a:"一貫性",c:["応答性","一貫性","寛容性"]},
+{unit:"6-2｜インターフェース",q:"ひと目見ただけで動きや機能がわかる性質はどれか。",a:"アフォーダンス",c:["一貫性","アフォーダンス","応答性"]},
+{unit:"6-2｜インターフェース",q:"操作をしたらすぐに反応したり、待ち時間もどれほどかを表示したりする性質はどれか。",a:"応答性",c:["寛容性","一貫性","応答性"]},
+{unit:"6-2｜インターフェース",q:"プロセスの処理中も他の作業ができたり、一時的に中断できたりする性質はどれか。",a:"寛容性",c:["アフォーダンス","寛容性","応答性"]},
+{unit:"7-1｜プログラミング",q:"プログラムを作る時間を短くすることと、プログラムによる自動化にかける時間を大きくすることの関係を何というか。",a:"トレードオフ",c:["トリクルダウン","トレードオフ","アフォーダンス"]},
+{unit:"7-1｜バグを防ぐプログラミング",q:"バグの発生しにくいプログラムを作成するための適切な内容はどれか。",a:"①②④",c:["①②④","①③④","②③④"],why:"①定数には意味を表す変数名をつけておく／②変数名を読んですぐに理解できる名前にする／④繰り返しに注目して処理をまとめる。"},
+{unit:"7-1｜Pythonプログラム",q:"コード「def add(num1, num2): return num1 + num2」のadd関数を何と呼ぶか。",a:"サブルーチン",c:["グローバル変数","サブルーチン","引数"]},
+{unit:"7-1｜Pythonプログラム",q:"関数の外で「num = 5」と定義され、関数に渡されているnum変数を何と呼ぶか。",a:"グローバル変数",c:["ローカル変数","グローバル変数","戻り値"]},
+{unit:"7-1｜Pythonプログラム",q:"num = 5、result = add(num, 3) のあとに print("結果は" + str(result)) を実行すると、出力はどれか。",a:"結果は8",c:["結果は5","結果は3","結果は8"]},
+{unit:"7-2｜二分探索",q:"二分探索の説明として正しいものはどれか。",a:"整列された配列の中央の要素を比較し、探索対象が中央より小さい場合は左側、大きい場合は右側の半分を探索する",c:["配列の先頭から最後まで順番に調べる","配列内のすべての要素を同時に比較する","整列された配列の中央の要素を比較し、探索対象が中央より小さい場合は左側、大きい場合は右側の半分を探索する"]},
+{unit:"7-2｜開発ツール",q:"テキストエディタは何のために使用されるか。",a:"テキストやソースコードを書いて保存する",c:["コードの記述やコンパイル、デバッグを行う","テキストやソースコードを書いて保存する","プログラムを実行・管理する"]},
+{unit:"7-2｜開発ツール",q:"統合開発環境（IDE）は何のために使用されるか。",a:"コードの記述やコンパイル、デバッグを行う",c:["テキストやソースコードを書いて保存する","画像や音声を編集する","コードの記述やコンパイル、デバッグを行う"]},
+{unit:"7-2｜開発ツール",q:"テキストエディタと比較したとき、統合開発環境の特徴はどれか。",a:"機能が豊富で多機能",c:["機能が少なく単機能","機能が豊富で多機能","文字入力だけに特化"]},
+{unit:"7-2｜開発手法",q:"試作とレビュー、改良を繰り返すプログラム開発手法はどれか。",a:"アジャイル型開発",c:["ウォーターフォール型開発","アジャイル型開発","一括開発"]},
+{unit:"7-2｜開発手法",q:"要件定義、設計、開発などを1つずつ完了させてから次の工程に進む開発手法はどれか。",a:"ウォーターフォール型開発",c:["アジャイル型開発","プロトタイプ型開発","ウォーターフォール型開発"]},
+{unit:"8-1｜OSの役割",q:"資料にあるOSの役割として正しい組み合わせはどれか。",a:"①②③⑤⑥⑦",c:["①②③⑤⑥⑦","①②④⑤⑦⑧","②③④⑥⑧"],why:"①GUIやCUIの提供／②アカウントの管理／③ファイルシステムの管理／⑤マウスやキーボード等のデバイス駆動／⑥仮想メモリのページ管理／⑦アプリケーションのメモリ確保。"},
+{unit:"8-1｜メモリリーク",q:"メモリリークとは何か。",a:"プログラムがメモリを使用後に解放しないことによって、利用可能なメモリが減少する現象",c:["メモリが一時的に無効化されることで実行速度が低下する現象","プログラムがメモリを使用後に解放しないことによって、利用可能なメモリが減少する現象","複数ユーザーが同時にメモリへアクセスできなくなる現象"]},
+{unit:"8-1｜マルチタスク",q:"マルチタスクの説明のうち、間違っているものはどれか。",a:"今の主流は協調マルチタスクである",c:["プリエンプティブマルチタスクとは、他のプロセスを割り込ませることである","協調マルチタスクとは、一つのプロセスが時々停止して他のプロセスが処理できるように譲ることである","今の主流は協調マルチタスクである"]},
+{unit:"8-2｜仮想化",q:"PCの中で、起動しているOSとは別のOSをシミュレートして動かす技術は何か。",a:"仮想化",c:["高速化","仮想化","量子化"]},
+{unit:"8-2｜主キー",q:"資料にある主キーの説明として正しい組み合わせはどれか。",a:"②③",c:["①②","②③","①③④"],why:"②テーブル内で重複する値を持つことができない／③その列が空欄となっているレコードは許されない。"},
+{unit:"8-2｜バックアップ",q:"完全バックアップと差分バックアップの説明のうち、間違っているものはどれか。",a:"差分バックアップは、前日までから変更された部分だけをバックアップする",c:["完全バックアップは、全てのデータをバックアップする方式である","差分バックアップは、前回の完全バックアップ以降に変更されたデータをバックアップする方式である","差分バックアップは、前日までから変更された部分だけをバックアップする"],why:"資料では③が正しい説明として示され、④の『前日まで』という説明が誤り。"}
+];
+let index=0,score=0,answered=false,order=[];
+const $=id=>document.getElementById(id);
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function updateStats(){$("count").textContent=Math.min(index+1,questions.length)+" / "+questions.length;$("score").textContent=score;$("rate").textContent=(index?Math.round(score/index*100):0)+"%";$("progress").style.width=(index/questions.length*100)+"%"}
+function render(){
+ if(index>=questions.length){$("tag").textContent="結果";$("question").textContent="全問終了！";$("choices").innerHTML="";$("feedback").className="feedback show";$("feedback").textContent="正解数："+score+" / "+questions.length+"問（"+Math.round(score/questions.length*100)+"%）";$("next").disabled=true;$("next").textContent="終了";$("skip").disabled=true;updateStats();return}
+ answered=false;const q=questions[index];$("tag").textContent=q.unit;$("question").textContent=q.q;$("choices").innerHTML="";$("feedback").className="feedback";$("feedback").textContent="";$("next").disabled=true;$("next").textContent="次の問題へ";
+ order=shuffle(q.c);order.forEach((v,i)=>{const b=document.createElement("button");b.className="choice";b.textContent=(i+1)+"．"+v;b.onclick=()=>choose(v,b);$("choices").appendChild(b)});updateStats()
+}
+function choose(v,btn){if(answered)return;answered=true;const q=questions[index];const buttons=[...$("choices").children];buttons.forEach(b=>{b.disabled=true;if(b.textContent.slice(2)===q.a)b.classList.add("correct")});let ok=v===q.a;if(!ok)btn.classList.add("wrong");if(ok)score++;$("feedback").className="feedback show";$("feedback").innerHTML=(ok?"正解！":"不正解。正解は「"+q.a+"」です。")+(q.why?"<br>"+q.why:"");$("next").disabled=false;updateStats()}
+function next(){if(index<questions.length)index++;render()}
+$("next").onclick=next;$("skip").onclick=next;$("restart").onclick=()=>{index=0;score=0;$("skip").disabled=false;render()};render();
+</script></body></html>
